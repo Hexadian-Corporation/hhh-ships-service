@@ -13,11 +13,33 @@ Manages ship data including cargo holds, SCU capacity, SCM/quantum speeds, and l
 - opyoid (dependency injection)
 - Hexagonal architecture (Ports & Adapters)
 
-## Quick Start
+## Prerequisites
+
+- [uv](https://docs.astral.sh/uv/)
+- MongoDB running on localhost:27017
+
+## Setup
 
 ```bash
 uv sync
+```
+
+## Run
+
+```bash
 uv run uvicorn src.main:app --reload --port 8002
+```
+
+## Test
+
+```bash
+uv run pytest
+```
+
+## Lint
+
+```bash
+uv run ruff check .
 ```
 
 ## Environment Variables
