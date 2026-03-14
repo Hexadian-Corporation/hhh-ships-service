@@ -10,7 +10,7 @@ from src.infrastructure.config.settings import Settings
 
 def create_app() -> FastAPI:
     settings = Settings()
-    injector = Injector(AppModule(settings))
+    injector = Injector([AppModule(settings)])
 
     ship_service = injector.inject(ShipService)
     init_router(ship_service)

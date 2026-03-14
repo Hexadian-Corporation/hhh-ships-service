@@ -1,11 +1,9 @@
-from opyoid import Injectable
-
 from src.application.ports.inbound.ship_service import ShipService
 from src.application.ports.outbound.ship_repository import ShipRepository
 from src.domain.models.ship import Ship
 
 
-class ShipServiceImpl(Injectable, ShipService):
+class ShipServiceImpl(ShipService):
 
     def __init__(self, ship_repository: ShipRepository) -> None:
         self._repository = ship_repository
