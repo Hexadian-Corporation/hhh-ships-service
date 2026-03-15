@@ -6,6 +6,8 @@ from src.domain.models.ship import Ship
 
 _CACHE_MAXSIZE = 128
 _CACHE_TTL = 900
+_LIST_CACHE_KEY = "list:all"
+_SHIP_KEY_PREFIX = "ship:"
 
 
 class ShipServiceImpl(ShipService):
@@ -20,20 +22,21 @@ class ShipServiceImpl(ShipService):
         return result
 
     def get_ship(self, ship_id: str) -> Ship | None:
-        cached = self._cache.get(ship_id)
+        key = f"{_SHIP_KEY_PREFIX}{ship_id}"
+        cached = self._cache.get(key)
         if cached is not None:
             return cached
         ship_found = self._repository.find_by_id(ship_id)
         if ship_found is not None:
-            self._cache[ship_id] = ship_found
+            self._cache[key] = ship_found
         return ship_found
 
     def list_ships(self) -> list[Ship]:
-        cached = self._cache.get("__all__")
+        cached = self._cache.get(_LIST_CACHE_KEY)
         if cached is not None:
             return cached
         ships = self._repository.find_all()
-        self._cache["__all__"] = ships
+        self._cache[_LIST_CACHE_KEY] = ships
         return ships
 
     def delete_ship(self, ship_id: str) -> bool:
