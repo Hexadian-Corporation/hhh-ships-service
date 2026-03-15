@@ -3,7 +3,6 @@ from src.infrastructure.adapters.inbound.api.ship_dto import CargoHoldDTO, ShipD
 
 
 class ShipApiMapper:
-
     @staticmethod
     def to_domain(dto: ShipDTO) -> Ship:
         return Ship(

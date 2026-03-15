@@ -2,7 +2,6 @@ from src.domain.models.ship import CargoHold, Ship
 
 
 class ShipPersistenceMapper:
-
     @staticmethod
     def to_document(ship: Ship) -> dict:
         return {

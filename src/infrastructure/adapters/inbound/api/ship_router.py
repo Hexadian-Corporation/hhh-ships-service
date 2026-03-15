@@ -30,7 +30,7 @@ def get_ship(ship_id: str) -> JSONResponse:
     try:
         ship = _ship_service.get(ship_id)
     except ShipNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     dto = ShipApiMapper.to_dto(ship)
     return JSONResponse(
         content=dto.model_dump(by_alias=True),
@@ -52,4 +52,4 @@ def delete_ship(ship_id: str) -> None:
     try:
         _ship_service.delete(ship_id)
     except ShipNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc))
+        raise HTTPException(status_code=404, detail=str(exc)) from exc

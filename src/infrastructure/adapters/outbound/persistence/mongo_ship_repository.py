@@ -7,7 +7,6 @@ from src.infrastructure.adapters.outbound.persistence.ship_persistence_mapper im
 
 
 class MongoShipRepository(ShipRepository):
-
     def __init__(self, collection: Collection) -> None:
         self._collection = collection
 

@@ -11,7 +11,6 @@ _SHIP_KEY_PREFIX = "ship:"
 
 
 class ShipServiceImpl(ShipService):
-
     def __init__(self, ship_repository: ShipRepository) -> None:
         self._repository = ship_repository
         self._cache: TTLCache[str, Ship | list[Ship]] = TTLCache(maxsize=_CACHE_MAXSIZE, ttl=_CACHE_TTL)
