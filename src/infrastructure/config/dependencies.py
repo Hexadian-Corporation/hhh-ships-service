@@ -1,5 +1,6 @@
 from opyoid import Module, SingletonScope
 from pymongo import MongoClient
+from pymongo.collation import Collation
 from pymongo.collection import Collection
 
 from src.application.ports.inbound.ship_service import ShipService
@@ -19,6 +20,9 @@ class AppModule(Module):
         client = MongoClient(self._settings.mongo_uri)
         db = client[self._settings.mongo_db]
         collection = db["ships"]
+
+        collection.create_index("name", collation=Collation(locale="en", strength=2))
+        collection.create_index("manufacturer")
 
         self.bind(Collection, to_instance=collection, scope=SingletonScope)
         self.bind(ShipRepository, to_class=MongoShipRepository, scope=SingletonScope)
