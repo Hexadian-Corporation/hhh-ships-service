@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from hexadian_auth_common.fastapi import JWTAuthDependency, _stub_jwt_auth, register_exception_handlers
 from opyoid import Injector
 
 from src.application.ports.inbound.ship_service import ShipService
@@ -16,6 +17,11 @@ def create_app() -> FastAPI:
     init_router(ship_service)
 
     app = FastAPI(title=settings.app_name)
+
+    jwt_auth = JWTAuthDependency(secret=settings.jwt_secret, algorithm=settings.jwt_algorithm)
+    app.dependency_overrides[_stub_jwt_auth] = jwt_auth
+    register_exception_handlers(app)
+
     app.include_router(router)
 
     @app.get("/health")
