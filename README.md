@@ -63,13 +63,15 @@ uv run hhh up
 | `HHH_SHIPS_MONGO_URI` | `mongodb://localhost:27017` | MongoDB connection string |
 | `HHH_SHIPS_MONGO_DB` | `hhh_ships` | Database name |
 | `HHH_SHIPS_PORT` | `8002` | Service port |
+| `HHH_SHIPS_JWT_SECRET` | — | Secret key for JWT signature verification |
+| `HHH_SHIPS_JWT_ALGORITHM` | `HS256` | JWT signing algorithm |
 
 ## API
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/ships/` | Create a ship |
-| `GET` | `/ships/{id}` | Get ship by ID |
-| `GET` | `/ships/` | List all ships |
-| `DELETE` | `/ships/{id}` | Delete a ship |
-| `GET` | `/health` | Health check |
+| Method | Endpoint | Permission | Description |
+|---|---|---|---|
+| `POST` | `/ships/` | `ships:write` | Create a ship |
+| `GET` | `/ships/{id}` | `ships:read` | Get ship by ID |
+| `GET` | `/ships/` | `ships:read` | List all ships |
+| `DELETE` | `/ships/{id}` | `ships:delete` | Delete a ship |
+| `GET` | `/health` | Public | Health check |
