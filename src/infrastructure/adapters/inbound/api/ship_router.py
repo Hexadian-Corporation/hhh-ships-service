@@ -11,6 +11,10 @@ router = APIRouter(prefix="/ships", tags=["ships"])
 
 _ship_service: ShipService | None = None
 
+_read = [Depends(require_permission("hhh:ships:read"))]
+_write = [Depends(require_permission("hhh:ships:write"))]
+_delete = [Depends(require_permission("hhh:ships:delete"))]
+
 _CACHE_MAX_AGE = 900
 
 
@@ -19,14 +23,14 @@ def init_router(ship_service: ShipService) -> None:
     _ship_service = ship_service
 
 
-@router.post("/", response_model=ShipDTO, status_code=201, dependencies=[Depends(require_permission("ships:write"))])
+@router.post("/", response_model=ShipDTO, status_code=201, dependencies=_write)
 def create_ship(dto: ShipDTO) -> ShipDTO:
     ship = ShipApiMapper.to_domain(dto)
     created = _ship_service.create(ship)
     return ShipApiMapper.to_dto(created)
 
 
-@router.get("/{ship_id}", response_model=ShipDTO, dependencies=[Depends(require_permission("ships:read"))])
+@router.get("/{ship_id}", response_model=ShipDTO, dependencies=_read)
 def get_ship(ship_id: str) -> JSONResponse:
     try:
         ship = _ship_service.get(ship_id)
@@ -39,7 +43,7 @@ def get_ship(ship_id: str) -> JSONResponse:
     )
 
 
-@router.get("/", response_model=list[ShipDTO], dependencies=[Depends(require_permission("ships:read"))])
+@router.get("/", response_model=list[ShipDTO], dependencies=_read)
 def list_ships() -> JSONResponse:
     dtos = [ShipApiMapper.to_dto(s) for s in _ship_service.list_all()]
     return JSONResponse(
@@ -48,7 +52,7 @@ def list_ships() -> JSONResponse:
     )
 
 
-@router.delete("/{ship_id}", status_code=204, dependencies=[Depends(require_permission("ships:delete"))])
+@router.delete("/{ship_id}", status_code=204, dependencies=_delete)
 def delete_ship(ship_id: str) -> None:
     try:
         _ship_service.delete(ship_id)

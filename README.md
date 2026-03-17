@@ -70,8 +70,8 @@ uv run hhh up
 
 | Method | Endpoint | Permission | Description |
 |---|---|---|---|
-| `POST` | `/ships/` | `ships:write` | Create a ship |
-| `GET` | `/ships/{id}` | `ships:read` | Get ship by ID |
-| `GET` | `/ships/` | `ships:read` | List all ships |
-| `DELETE` | `/ships/{id}` | `ships:delete` | Delete a ship |
+| `POST` | `/ships/` | `hhh:ships:write` | Create a ship |
+| `GET` | `/ships/{id}` | `hhh:ships:read` | Get ship by ID |
+| `GET` | `/ships/` | `hhh:ships:read` | List all ships |
+| `DELETE` | `/ships/{id}` | `hhh:ships:delete` | Delete a ship |
 | `GET` | `/health` | Public | Health check |

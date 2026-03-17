@@ -54,7 +54,7 @@ class TestGetShipCacheHeader:
     def test_get_ship_has_cache_control(self, client: TestClient, mock_service: MagicMock) -> None:
         mock_service.get.return_value = _make_ship()
 
-        response = client.get("/ships/abc123", headers=_auth_header(["ships:read"]))
+        response = client.get("/ships/abc123", headers=_auth_header(["hhh:ships:read"]))
 
         assert response.status_code == 200
         assert response.headers["cache-control"] == f"max-age={_CACHE_MAX_AGE}"
@@ -62,7 +62,7 @@ class TestGetShipCacheHeader:
     def test_list_ships_has_cache_control(self, client: TestClient, mock_service: MagicMock) -> None:
         mock_service.list_all.return_value = [_make_ship()]
 
-        response = client.get("/ships/", headers=_auth_header(["ships:read"]))
+        response = client.get("/ships/", headers=_auth_header(["hhh:ships:read"]))
 
         assert response.status_code == 200
         assert response.headers["cache-control"] == f"max-age={_CACHE_MAX_AGE}"
@@ -71,7 +71,7 @@ class TestGetShipCacheHeader:
         mock_service.create.return_value = _make_ship()
 
         response = client.post(
-            "/ships/", json={"name": "Aurora", "manufacturer": "RSI"}, headers=_auth_header(["ships:write"])
+            "/ships/", json={"name": "Aurora", "manufacturer": "RSI"}, headers=_auth_header(["hhh:ships:write"])
         )
 
         assert response.status_code == 201
@@ -80,7 +80,7 @@ class TestGetShipCacheHeader:
     def test_delete_ship_no_cache_control(self, client: TestClient, mock_service: MagicMock) -> None:
         mock_service.delete.return_value = True
 
-        response = client.delete("/ships/abc123", headers=_auth_header(["ships:delete"]))
+        response = client.delete("/ships/abc123", headers=_auth_header(["hhh:ships:delete"]))
 
         assert response.status_code == 204
         assert "cache-control" not in response.headers
@@ -119,7 +119,7 @@ class TestAuthenticationRequired:
         payload = {
             "sub": "user-1",
             "username": "testuser",
-            "permissions": ["ships:read"],
+            "permissions": ["hhh:ships:read"],
             "exp": int(time.time()) - 3600,
         }
         token = jwt.encode(payload, _JWT_SECRET, algorithm="HS256")
@@ -134,22 +134,22 @@ class TestPermissionRequired:
         response = client.post(
             "/ships/",
             json={"name": "Aurora", "manufacturer": "RSI"},
-            headers=_auth_header(["ships:read"]),
+            headers=_auth_header(["hhh:ships:read"]),
         )
 
         assert response.status_code == 403
 
     def test_get_ship_forbidden_without_read(self, client: TestClient) -> None:
-        response = client.get("/ships/abc123", headers=_auth_header(["ships:write"]))
+        response = client.get("/ships/abc123", headers=_auth_header(["hhh:ships:write"]))
 
         assert response.status_code == 403
 
     def test_list_ships_forbidden_without_read(self, client: TestClient) -> None:
-        response = client.get("/ships/", headers=_auth_header(["ships:write"]))
+        response = client.get("/ships/", headers=_auth_header(["hhh:ships:write"]))
 
         assert response.status_code == 403
 
     def test_delete_ship_forbidden_without_delete(self, client: TestClient) -> None:
-        response = client.delete("/ships/abc123", headers=_auth_header(["ships:read"]))
+        response = client.delete("/ships/abc123", headers=_auth_header(["hhh:ships:read"]))
 
         assert response.status_code == 403
