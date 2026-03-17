@@ -33,7 +33,7 @@ def mock_service() -> MagicMock:
 @pytest.fixture
 def client(mock_service: MagicMock) -> TestClient:
     with (
-        patch.dict("os.environ", {"HHH_SHIPS_JWT_SECRET": _JWT_SECRET}),
+        patch.dict("os.environ", {"HEXADIAN_AUTH_JWT_SECRET": _JWT_SECRET}),
         patch("src.infrastructure.config.dependencies.MongoClient"),
     ):
         from src.main import create_app

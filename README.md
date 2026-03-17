@@ -63,7 +63,7 @@ uv run hhh up
 | `HHH_SHIPS_MONGO_URI` | `mongodb://localhost:27017` | MongoDB connection string |
 | `HHH_SHIPS_MONGO_DB` | `hhh_ships` | Database name |
 | `HHH_SHIPS_PORT` | `8002` | Service port |
-| `HHH_SHIPS_JWT_SECRET` | — | Secret key for JWT signature verification |
+| `HEXADIAN_AUTH_JWT_SECRET` | `change-me-in-production` | Shared secret key for JWT signature verification |
 | `HHH_SHIPS_JWT_ALGORITHM` | `HS256` | JWT signing algorithm |
 
 ## API
