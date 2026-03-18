@@ -1,3 +1,5 @@
+> **© 2026 Hexadian Corporation** — Licensed under [PolyForm Noncommercial 1.0.0 (Modified)](./LICENSE). No commercial use, no public deployment, no plagiarism. See [LICENSE](./LICENSE) for full terms.
+
 # hhh-ships-service
 
 Ship specifications and cargo capacity management microservice for **H³ – Hexadian Hauling Helper**.
