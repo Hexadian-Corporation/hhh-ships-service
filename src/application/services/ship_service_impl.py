@@ -5,7 +5,7 @@ from src.application.ports.outbound.ship_repository import ShipRepository
 from src.domain.models.ship import Ship
 
 _CACHE_MAXSIZE = 128
-_CACHE_TTL = 900
+_CACHE_TTL = 600
 _LIST_CACHE_KEY = "list:all"
 _SHIP_KEY_PREFIX = "ship:"
 

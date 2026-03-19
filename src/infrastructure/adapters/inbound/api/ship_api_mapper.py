@@ -9,10 +9,7 @@ class ShipApiMapper:
             id=dto.id,
             name=dto.name,
             manufacturer=dto.manufacturer,
-            cargo_holds=[
-                CargoHold(name=h.name, volume_scu=h.volume_scu, max_box_size_scu=h.max_box_size_scu)
-                for h in dto.cargo_holds
-            ],
+            cargo_holds=[CargoHold(name=h.name, volume_scu=h.volume_scu) for h in dto.cargo_holds],
             total_scu=dto.total_scu,
             scm_speed=dto.scm_speed,
             quantum_speed=dto.quantum_speed,
@@ -26,10 +23,7 @@ class ShipApiMapper:
             _id=ship.id,
             name=ship.name,
             manufacturer=ship.manufacturer,
-            cargo_holds=[
-                CargoHoldDTO(name=h.name, volume_scu=h.volume_scu, max_box_size_scu=h.max_box_size_scu)
-                for h in ship.cargo_holds
-            ],
+            cargo_holds=[CargoHoldDTO(name=h.name, volume_scu=h.volume_scu) for h in ship.cargo_holds],
             total_scu=ship.total_scu,
             scm_speed=ship.scm_speed,
             quantum_speed=ship.quantum_speed,

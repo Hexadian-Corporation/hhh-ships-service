@@ -7,10 +7,7 @@ class ShipPersistenceMapper:
         return {
             "name": ship.name,
             "manufacturer": ship.manufacturer,
-            "cargo_holds": [
-                {"name": h.name, "volume_scu": h.volume_scu, "max_box_size_scu": h.max_box_size_scu}
-                for h in ship.cargo_holds
-            ],
+            "cargo_holds": [{"name": h.name, "volume_scu": h.volume_scu} for h in ship.cargo_holds],
             "total_scu": ship.total_scu,
             "scm_speed": ship.scm_speed,
             "quantum_speed": ship.quantum_speed,
@@ -28,7 +25,6 @@ class ShipPersistenceMapper:
                 CargoHold(
                     name=h["name"],
                     volume_scu=h["volume_scu"],
-                    max_box_size_scu=h["max_box_size_scu"],
                 )
                 for h in doc.get("cargo_holds", [])
             ],

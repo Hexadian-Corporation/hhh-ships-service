@@ -15,7 +15,7 @@ _read = [Depends(require_permission("hhh:ships:read"))]
 _write = [Depends(require_permission("hhh:ships:write"))]
 _delete = [Depends(require_permission("hhh:ships:delete"))]
 
-_CACHE_MAX_AGE = 900
+_CACHE_MAX_AGE = 600
 
 
 def init_router(ship_service: ShipService) -> None:

@@ -7,7 +7,6 @@ class CargoHold:
 
     name: str
     volume_scu: float
-    max_box_size_scu: float
 
 
 @dataclass
