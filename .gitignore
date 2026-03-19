@@ -18,6 +18,5 @@ build/
 !.github/instructions/copilot.instructions.md
 !.github/instructions/development-workflow.instructions.md
 !.github/instructions/bug-history.instructions.md
-coverage.xmlcoverage.xml
-
+!.github/instructions/gh-workflow.instructions.md
 coverage.xml
