@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 class CargoHoldDTO(BaseModel):
     name: str
     volume_scu: float
-    max_box_size_scu: float
 
 
 class ShipDTO(BaseModel):

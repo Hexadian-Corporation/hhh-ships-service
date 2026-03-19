@@ -47,7 +47,7 @@ src/
 ## Domain Model
 
 - **Ship** — `id`, `name`, `manufacturer`, `cargo_holds` (list), `total_scu`, `scm_speed`, `quantum_speed`, `landing_time_seconds`, `loading_time_per_scu_seconds`
-- **CargoHold** — `name`, `volume_scu`, `max_box_size_scu` (all required, no defaults)
+- **CargoHold** — `name`, `volume_scu` (all required, no defaults)
 
 ## Environment Variables
 
