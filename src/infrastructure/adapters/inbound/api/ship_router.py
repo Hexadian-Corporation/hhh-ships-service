@@ -5,7 +5,7 @@ from hexadian_auth_common.fastapi import require_permission
 from src.application.ports.inbound.ship_service import ShipService
 from src.domain.exceptions.ship_exceptions import ShipNotFoundError
 from src.infrastructure.adapters.inbound.api.ship_api_mapper import ShipApiMapper
-from src.infrastructure.adapters.inbound.api.ship_dto import ShipDTO
+from src.infrastructure.adapters.inbound.api.ship_dto import ShipDTO, ShipUpdateDTO
 
 router = APIRouter(prefix="/ships", tags=["ships"])
 
@@ -28,6 +28,15 @@ def create_ship(dto: ShipDTO) -> ShipDTO:
     ship = ShipApiMapper.to_domain(dto)
     created = _ship_service.create(ship)
     return ShipApiMapper.to_dto(created)
+
+
+@router.get("/search", response_model=list[ShipDTO], dependencies=_read)
+def search_ships(q: str = "") -> JSONResponse:
+    dtos = [ShipApiMapper.to_dto(s) for s in _ship_service.search_by_name(q)]
+    return JSONResponse(
+        content=[d.model_dump(by_alias=True) for d in dtos],
+        headers={"Cache-Control": f"max-age={_CACHE_MAX_AGE}"},
+    )
 
 
 @router.get("/{ship_id}", response_model=ShipDTO, dependencies=_read)
@@ -58,3 +67,16 @@ def delete_ship(ship_id: str) -> None:
         _ship_service.delete(ship_id)
     except ShipNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.put("/{ship_id}", response_model=ShipDTO, dependencies=_write)
+def update_ship(ship_id: str, dto: ShipUpdateDTO) -> ShipDTO:
+    try:
+        existing = _ship_service.get_ship(ship_id)
+        if existing is None:
+            raise ShipNotFoundError(ship_id)
+        updated_ship = ShipApiMapper.update_to_domain(existing, dto)
+        result = _ship_service.update_ship(updated_ship)
+    except ShipNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return ShipApiMapper.to_dto(result)

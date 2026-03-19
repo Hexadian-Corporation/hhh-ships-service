@@ -153,3 +153,91 @@ class TestPermissionRequired:
         response = client.delete("/ships/abc123", headers=_auth_header(["hhh:ships:read"]))
 
         assert response.status_code == 403
+
+
+class TestSearchShips:
+    def test_search_returns_matching_ships(self, client: TestClient, mock_service: MagicMock) -> None:
+        mock_service.search_by_name.return_value = [_make_ship()]
+
+        response = client.get("/ships/search?q=aurora", headers=_auth_header(["hhh:ships:read"]))
+
+        assert response.status_code == 200
+        mock_service.search_by_name.assert_called_once_with("aurora")
+
+    def test_search_returns_empty_for_blank_query(self, client: TestClient, mock_service: MagicMock) -> None:
+        mock_service.search_by_name.return_value = []
+
+        response = client.get("/ships/search?q=", headers=_auth_header(["hhh:ships:read"]))
+
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_search_has_cache_control(self, client: TestClient, mock_service: MagicMock) -> None:
+        mock_service.search_by_name.return_value = [_make_ship()]
+
+        response = client.get("/ships/search?q=aurora", headers=_auth_header(["hhh:ships:read"]))
+
+        assert response.headers["cache-control"] == f"max-age={_CACHE_MAX_AGE}"
+
+    def test_search_requires_auth(self, client: TestClient) -> None:
+        response = client.get("/ships/search?q=aurora")
+
+        assert response.status_code == 401
+
+    def test_search_forbidden_without_read(self, client: TestClient) -> None:
+        response = client.get("/ships/search?q=aurora", headers=_auth_header(["hhh:ships:write"]))
+
+        assert response.status_code == 403
+
+
+class TestUpdateShip:
+    def test_update_ship_returns_updated(self, client: TestClient, mock_service: MagicMock) -> None:
+        ship = _make_ship()
+        mock_service.get_ship.return_value = ship
+        mock_service.update_ship.return_value = ship
+
+        response = client.put(
+            "/ships/abc123",
+            json={"name": "Aurora MR"},
+            headers=_auth_header(["hhh:ships:write"]),
+        )
+
+        assert response.status_code == 200
+
+    def test_update_ship_returns_404_for_missing_ship(self, client: TestClient, mock_service: MagicMock) -> None:
+        mock_service.get_ship.return_value = None
+
+        response = client.put(
+            "/ships/missing",
+            json={"name": "Aurora MR"},
+            headers=_auth_header(["hhh:ships:write"]),
+        )
+
+        assert response.status_code == 404
+
+    def test_update_ship_requires_auth(self, client: TestClient) -> None:
+        response = client.put("/ships/abc123", json={"name": "Aurora MR"})
+
+        assert response.status_code == 401
+
+    def test_update_ship_forbidden_without_write(self, client: TestClient) -> None:
+        response = client.put(
+            "/ships/abc123",
+            json={"name": "Aurora MR"},
+            headers=_auth_header(["hhh:ships:read"]),
+        )
+
+        assert response.status_code == 403
+
+    def test_update_ship_no_cache_control(self, client: TestClient, mock_service: MagicMock) -> None:
+        ship = _make_ship()
+        mock_service.get_ship.return_value = ship
+        mock_service.update_ship.return_value = ship
+
+        response = client.put(
+            "/ships/abc123",
+            json={"name": "Aurora MR"},
+            headers=_auth_header(["hhh:ships:write"]),
+        )
+
+        assert "cache-control" not in response.headers

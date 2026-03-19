@@ -31,3 +31,14 @@ class MongoShipRepository(ShipRepository):
     def delete(self, ship_id: str) -> bool:
         result = self._collection.delete_one({"_id": ObjectId(ship_id)})
         return result.deleted_count > 0
+
+    def search_by_name(self, query: str) -> list[Ship]:
+        cursor = self._collection.find({"name": {"$regex": query, "$options": "i"}})
+        return [ShipPersistenceMapper.to_domain(doc) for doc in cursor]
+
+    def update(self, ship: Ship) -> Ship | None:
+        doc = ShipPersistenceMapper.to_document(ship)
+        result = self._collection.replace_one({"_id": ObjectId(ship.id)}, doc)
+        if result.matched_count == 0:
+            return None
+        return ship

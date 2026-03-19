@@ -15,3 +15,9 @@ class ShipRepository(ABC):
 
     @abstractmethod
     def delete(self, ship_id: str) -> bool: ...
+
+    @abstractmethod
+    def search_by_name(self, query: str) -> list[Ship]: ...
+
+    @abstractmethod
+    def update(self, ship: Ship) -> Ship | None: ...

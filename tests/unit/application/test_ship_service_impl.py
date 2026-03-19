@@ -117,3 +117,85 @@ class TestDeleteShip:
 
         service.get_ship("abc123")
         assert mock_repo.find_by_id.call_count == 2
+
+
+class TestSearchByName:
+    def test_search_returns_empty_for_blank_query(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        result = service.search_by_name("")
+
+        assert result == []
+        mock_repo.search_by_name.assert_not_called()
+
+    def test_search_returns_empty_for_whitespace_query(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        result = service.search_by_name("   ")
+
+        assert result == []
+        mock_repo.search_by_name.assert_not_called()
+
+    def test_search_calls_repo(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        ships = [_make_ship()]
+        mock_repo.search_by_name.return_value = ships
+
+        result = service.search_by_name("aurora")
+
+        assert result == ships
+        mock_repo.search_by_name.assert_called_once_with("aurora")
+
+    def test_search_caches_result(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        mock_repo.search_by_name.return_value = [_make_ship()]
+
+        service.search_by_name("aurora")
+        service.search_by_name("aurora")
+
+        mock_repo.search_by_name.assert_called_once()
+
+    def test_search_cache_is_case_insensitive_key(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        mock_repo.search_by_name.return_value = [_make_ship()]
+
+        service.search_by_name("Aurora")
+        service.search_by_name("aurora")
+
+        mock_repo.search_by_name.assert_called_once()
+
+
+class TestUpdateShip:
+    def test_update_ship_raises_if_not_found(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        from src.domain.exceptions.ship_exceptions import ShipNotFoundError
+
+        mock_repo.find_by_id.return_value = None
+
+        with pytest.raises(ShipNotFoundError):
+            service.update_ship(_make_ship())
+
+    def test_update_ship_raises_if_repo_update_returns_none(
+        self, service: ShipServiceImpl, mock_repo: MagicMock
+    ) -> None:
+        from src.domain.exceptions.ship_exceptions import ShipNotFoundError
+
+        mock_repo.find_by_id.return_value = _make_ship()
+        mock_repo.update.return_value = None
+
+        with pytest.raises(ShipNotFoundError):
+            service.update_ship(_make_ship())
+
+    def test_update_ship_returns_updated(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        ship = _make_ship()
+        mock_repo.find_by_id.return_value = ship
+        mock_repo.update.return_value = ship
+
+        result = service.update_ship(ship)
+
+        assert result == ship
+        mock_repo.update.assert_called_once_with(ship)
+
+    def test_update_ship_invalidates_cache(self, service: ShipServiceImpl, mock_repo: MagicMock) -> None:
+        ship = _make_ship()
+        mock_repo.find_all.return_value = [ship]
+        service.list_ships()
+
+        mock_repo.find_by_id.return_value = ship
+        mock_repo.update.return_value = ship
+        service.update_ship(ship)
+
+        service.list_ships()
+        assert mock_repo.find_all.call_count == 2
