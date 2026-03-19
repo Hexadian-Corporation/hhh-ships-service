@@ -193,8 +193,8 @@ class TestSearchShips:
 class TestUpdateShip:
     def test_update_ship_returns_updated(self, client: TestClient, mock_service: MagicMock) -> None:
         ship = _make_ship()
-        mock_service.get_ship.return_value = ship
-        mock_service.update_ship.return_value = ship
+        mock_service.get.return_value = ship
+        mock_service.update.return_value = ship
 
         response = client.put(
             "/ships/abc123",
@@ -205,7 +205,9 @@ class TestUpdateShip:
         assert response.status_code == 200
 
     def test_update_ship_returns_404_for_missing_ship(self, client: TestClient, mock_service: MagicMock) -> None:
-        mock_service.get_ship.return_value = None
+        from src.domain.exceptions.ship_exceptions import ShipNotFoundError
+
+        mock_service.get.side_effect = ShipNotFoundError("missing")
 
         response = client.put(
             "/ships/missing",
@@ -231,8 +233,8 @@ class TestUpdateShip:
 
     def test_update_ship_no_cache_control(self, client: TestClient, mock_service: MagicMock) -> None:
         ship = _make_ship()
-        mock_service.get_ship.return_value = ship
-        mock_service.update_ship.return_value = ship
+        mock_service.get.return_value = ship
+        mock_service.update.return_value = ship
 
         response = client.put(
             "/ships/abc123",

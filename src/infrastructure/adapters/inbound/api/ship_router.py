@@ -72,11 +72,9 @@ def delete_ship(ship_id: str) -> None:
 @router.put("/{ship_id}", response_model=ShipDTO, dependencies=_write)
 def update_ship(ship_id: str, dto: ShipUpdateDTO) -> ShipDTO:
     try:
-        existing = _ship_service.get_ship(ship_id)
-        if existing is None:
-            raise ShipNotFoundError(ship_id)
+        existing = _ship_service.get(ship_id)
         updated_ship = ShipApiMapper.update_to_domain(existing, dto)
-        result = _ship_service.update_ship(updated_ship)
+        result = _ship_service.update(updated_ship)
     except ShipNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ShipApiMapper.to_dto(result)
