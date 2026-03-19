@@ -18,3 +18,6 @@ build/
 !.github/instructions/copilot.instructions.md
 !.github/instructions/development-workflow.instructions.md
 !.github/instructions/bug-history.instructions.md
+coverage.xmlcoverage.xml
+
+coverage.xml
