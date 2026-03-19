@@ -15,3 +15,9 @@ class ShipService(ABC):
 
     @abstractmethod
     def delete_ship(self, ship_id: str) -> bool: ...
+
+    @abstractmethod
+    def search_by_name(self, query: str) -> list[Ship]: ...
+
+    @abstractmethod
+    def update_ship(self, ship: Ship) -> Ship: ...

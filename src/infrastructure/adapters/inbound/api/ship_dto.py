@@ -18,3 +18,19 @@ class ShipDTO(BaseModel):
     loading_time_per_scu_seconds: float = 0.0
 
     model_config = {"populate_by_name": True}
+
+
+class CargoHoldUpdateDTO(BaseModel):
+    name: str
+    volume_scu: float
+
+
+class ShipUpdateDTO(BaseModel):
+    name: str | None = None
+    manufacturer: str | None = None
+    cargo_holds: list[CargoHoldUpdateDTO] | None = None
+    total_scu: float | None = None
+    scm_speed: float | None = None
+    quantum_speed: float | None = None
+    landing_time_seconds: float | None = None
+    loading_time_per_scu_seconds: float | None = None

@@ -1,5 +1,7 @@
+from dataclasses import replace
+
 from src.domain.models.ship import CargoHold, Ship
-from src.infrastructure.adapters.inbound.api.ship_dto import CargoHoldDTO, ShipDTO
+from src.infrastructure.adapters.inbound.api.ship_dto import CargoHoldDTO, ShipDTO, ShipUpdateDTO
 
 
 class ShipApiMapper:
@@ -30,3 +32,24 @@ class ShipApiMapper:
             landing_time_seconds=ship.landing_time_seconds,
             loading_time_per_scu_seconds=ship.loading_time_per_scu_seconds,
         )
+
+    @staticmethod
+    def update_to_domain(existing: Ship, dto: ShipUpdateDTO) -> Ship:
+        updates: dict = {}
+        if dto.name is not None:
+            updates["name"] = dto.name
+        if dto.manufacturer is not None:
+            updates["manufacturer"] = dto.manufacturer
+        if dto.cargo_holds is not None:
+            updates["cargo_holds"] = [CargoHold(name=h.name, volume_scu=h.volume_scu) for h in dto.cargo_holds]
+        if dto.total_scu is not None:
+            updates["total_scu"] = dto.total_scu
+        if dto.scm_speed is not None:
+            updates["scm_speed"] = dto.scm_speed
+        if dto.quantum_speed is not None:
+            updates["quantum_speed"] = dto.quantum_speed
+        if dto.landing_time_seconds is not None:
+            updates["landing_time_seconds"] = dto.landing_time_seconds
+        if dto.loading_time_per_scu_seconds is not None:
+            updates["loading_time_per_scu_seconds"] = dto.loading_time_per_scu_seconds
+        return replace(existing, **updates) if updates else existing
