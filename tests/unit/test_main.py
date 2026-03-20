@@ -57,3 +57,20 @@ class TestCORSMiddleware:
 
         assert response.status_code == 200
         assert response.headers.get("access-control-allow-origin") == "http://localhost:3000"
+
+
+class TestLifespan:
+    def test_lifespan_calls_seed_ships(self) -> None:
+        with (
+            patch.dict("os.environ", {"HEXADIAN_AUTH_JWT_SECRET": _JWT_SECRET}),
+            patch("src.infrastructure.config.dependencies.MongoClient"),
+            patch("src.main.seed_ships") as mock_seed,
+        ):
+            from src.main import create_app
+
+            app = create_app()
+
+            with TestClient(app):
+                pass
+
+        mock_seed.assert_called_once()
