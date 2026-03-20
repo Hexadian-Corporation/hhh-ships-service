@@ -17,22 +17,23 @@ class ShipServiceImpl(ShipService):
         self._repository = ship_repository
         self._cache: TTLCache[str, Ship | list[Ship]] = TTLCache(maxsize=_CACHE_MAXSIZE, ttl=_CACHE_TTL)
 
-    def create_ship(self, ship: Ship) -> Ship:
+    def create(self, ship: Ship) -> Ship:
         result = self._repository.save(ship)
         self._cache.clear()
         return result
 
-    def get_ship(self, ship_id: str) -> Ship | None:
+    def get(self, ship_id: str) -> Ship:
         key = f"{_SHIP_KEY_PREFIX}{ship_id}"
         cached = self._cache.get(key)
         if cached is not None:
             return cached
         ship_found = self._repository.find_by_id(ship_id)
-        if ship_found is not None:
-            self._cache[key] = ship_found
+        if ship_found is None:
+            raise ShipNotFoundError(ship_id)
+        self._cache[key] = ship_found
         return ship_found
 
-    def list_ships(self) -> list[Ship]:
+    def list_all(self) -> list[Ship]:
         cached = self._cache.get(_LIST_CACHE_KEY)
         if cached is not None:
             return cached
@@ -40,10 +41,10 @@ class ShipServiceImpl(ShipService):
         self._cache[_LIST_CACHE_KEY] = ships
         return ships
 
-    def delete_ship(self, ship_id: str) -> bool:
-        result = self._repository.delete(ship_id)
+    def delete(self, ship_id: str) -> None:
+        if not self._repository.delete(ship_id):
+            raise ShipNotFoundError(ship_id)
         self._cache.clear()
-        return result
 
     def search_by_name(self, query: str) -> list[Ship]:
         if not query.strip():
@@ -56,7 +57,7 @@ class ShipServiceImpl(ShipService):
         self._cache[key] = results
         return results
 
-    def update_ship(self, ship: Ship) -> Ship:
+    def update(self, ship: Ship) -> Ship:
         existing = self._repository.find_by_id(ship.id)
         if existing is None:
             raise ShipNotFoundError(ship.id)

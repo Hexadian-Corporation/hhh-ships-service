@@ -1,3 +1,6 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +11,7 @@ from src.application.ports.inbound.ship_service import ShipService
 from src.infrastructure.adapters.inbound.api.ship_router import init_router, router
 from src.infrastructure.config.dependencies import AppModule
 from src.infrastructure.config.settings import Settings
+from src.seed import seed_ships
 
 
 def create_app() -> FastAPI:
@@ -17,7 +21,12 @@ def create_app() -> FastAPI:
     ship_service = injector.inject(ShipService)
     init_router(ship_service)
 
-    app = FastAPI(title=settings.app_name)
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        seed_ships(ship_service)
+        yield
+
+    app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
     app.add_middleware(
         CORSMiddleware,
