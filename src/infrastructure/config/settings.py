@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     port: int = 8002
     jwt_secret: str = Field(default="change-me-in-production", validation_alias="HEXADIAN_AUTH_JWT_SECRET")
     jwt_algorithm: str = "HS256"
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
+    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000", "http://localhost:3001"])
     cache_ttl_seconds: int = 600
     cache_max_size: int = 128
 
