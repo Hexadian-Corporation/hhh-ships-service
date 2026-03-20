@@ -1,2 +1,3 @@
 aae5ca041947a018fffa391fbda4ac46479acb48:tests/unit/infrastructure/test_ship_router.py:generic-api-key:11
 e83334641ae35f929e25a54f5830290d20e81d13:tests/unit/test_main.py:generic-api-key:6
+d95b1cbf1542ba1e992035d7c358aa88c57d4f0b:tests/auth_helpers.py:generic-api-key:5
