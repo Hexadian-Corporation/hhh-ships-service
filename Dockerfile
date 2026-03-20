@@ -15,4 +15,4 @@ RUN uv sync --frozen --no-dev
 
 EXPOSE 8002
 
-CMD ["uv", "run", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8002"]
+CMD sh -c "uv run uvicorn src.main:app --host ${HHH_SHIPS_HOST:-0.0.0.0} --port ${HHH_SHIPS_PORT:-8002}"

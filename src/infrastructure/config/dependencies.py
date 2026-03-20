@@ -24,5 +24,13 @@ class AppModule(Module):
         collection.create_index("manufacturer")
 
         self.bind(Collection, to_instance=collection, scope=SingletonScope)
-        self.bind(ShipRepository, to_class=MongoShipRepository, scope=SingletonScope)
-        self.bind(ShipService, to_class=ShipServiceImpl, scope=SingletonScope)
+
+        mongo_repo = MongoShipRepository(collection)
+        self.bind(ShipRepository, to_instance=mongo_repo, scope=SingletonScope)
+
+        ship_service = ShipServiceImpl(
+            ship_repository=mongo_repo,
+            cache_ttl_seconds=self._settings.cache_ttl_seconds,
+            cache_max_size=self._settings.cache_max_size,
+        )
+        self.bind(ShipService, to_instance=ship_service, scope=SingletonScope)

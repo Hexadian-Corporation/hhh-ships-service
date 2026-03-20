@@ -64,9 +64,13 @@ uv run hhh up
 |---|---|---|
 | `HHH_SHIPS_MONGO_URI` | `mongodb://localhost:27017` | MongoDB connection string |
 | `HHH_SHIPS_MONGO_DB` | `hhh_ships` | Database name |
+| `HHH_SHIPS_HOST` | `0.0.0.0` | Host address for the HTTP server |
 | `HHH_SHIPS_PORT` | `8002` | Service port |
 | `HEXADIAN_AUTH_JWT_SECRET` | `change-me-in-production` | Shared secret key for JWT signature verification |
 | `HHH_SHIPS_JWT_ALGORITHM` | `HS256` | JWT signing algorithm |
+| `HHH_SHIPS_CORS_ORIGINS` | `["http://localhost:3000","http://localhost:3001"]` | JSON array of allowed CORS origins |
+| `HHH_SHIPS_CACHE_TTL_SECONDS` | `600` | In-memory cache TTL in seconds |
+| `HHH_SHIPS_CACHE_MAX_SIZE` | `128` | Maximum number of entries in the in-memory cache |
 
 ## API
 

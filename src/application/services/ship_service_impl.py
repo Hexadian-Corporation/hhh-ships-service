@@ -13,9 +13,14 @@ _SEARCH_KEY_PREFIX = "search:"
 
 
 class ShipServiceImpl(ShipService):
-    def __init__(self, ship_repository: ShipRepository) -> None:
+    def __init__(
+        self,
+        ship_repository: ShipRepository,
+        cache_ttl_seconds: int = _CACHE_TTL,
+        cache_max_size: int = _CACHE_MAXSIZE,
+    ) -> None:
         self._repository = ship_repository
-        self._cache: TTLCache[str, Ship | list[Ship]] = TTLCache(maxsize=_CACHE_MAXSIZE, ttl=_CACHE_TTL)
+        self._cache: TTLCache[str, Ship | list[Ship]] = TTLCache(maxsize=cache_max_size, ttl=cache_ttl_seconds)
 
     def create(self, ship: Ship) -> Ship:
         result = self._repository.save(ship)
