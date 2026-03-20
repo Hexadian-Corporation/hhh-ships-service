@@ -39,6 +39,7 @@ class TestShipModel:
         assert ship.quantum_speed == 0.0
         assert ship.landing_time_seconds == 0.0
         assert ship.loading_time_per_scu_seconds == 0.0
+        assert ship.in_game is True
 
     def test_ship_fields(self) -> None:
         hold = CargoHold(name="Main Hold", volume_scu=96.0)
@@ -52,6 +53,7 @@ class TestShipModel:
             quantum_speed=283_046_000.0,
             landing_time_seconds=120.0,
             loading_time_per_scu_seconds=3.0,
+            in_game=False,
         )
 
         assert ship.id == "abc123"
@@ -63,6 +65,7 @@ class TestShipModel:
         assert ship.quantum_speed == 283_046_000.0
         assert ship.landing_time_seconds == 120.0
         assert ship.loading_time_per_scu_seconds == 3.0
+        assert ship.in_game is False
 
     def test_ship_cargo_holds_default_is_independent(self) -> None:
         ship_a = Ship()

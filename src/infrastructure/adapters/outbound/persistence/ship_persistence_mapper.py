@@ -13,6 +13,7 @@ class ShipPersistenceMapper:
             "quantum_speed": ship.quantum_speed,
             "landing_time_seconds": ship.landing_time_seconds,
             "loading_time_per_scu_seconds": ship.loading_time_per_scu_seconds,
+            "in_game": ship.in_game,
         }
 
     @staticmethod
@@ -33,4 +34,5 @@ class ShipPersistenceMapper:
             quantum_speed=doc.get("quantum_speed", 0.0),
             landing_time_seconds=doc.get("landing_time_seconds", 0.0),
             loading_time_per_scu_seconds=doc.get("loading_time_per_scu_seconds", 0.0),
+            in_game=doc.get("in_game", True),
         )

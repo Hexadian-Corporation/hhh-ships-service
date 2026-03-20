@@ -22,3 +22,4 @@ class Ship:
     quantum_speed: float = 0.0
     landing_time_seconds: float = 0.0
     loading_time_per_scu_seconds: float = 0.0
+    in_game: bool = True

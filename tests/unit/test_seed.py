@@ -41,6 +41,10 @@ class TestSeedData:
         for ship in SHIPS:
             assert len(ship.cargo_holds) > 0
 
+    def test_all_ships_have_in_game_true(self) -> None:
+        for ship in SHIPS:
+            assert ship.in_game is True
+
     def test_total_scu_matches_cargo_holds(self) -> None:
         for ship in SHIPS:
             hold_total = sum(h.volume_scu for h in ship.cargo_holds)

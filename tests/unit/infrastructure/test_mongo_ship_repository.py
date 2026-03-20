@@ -17,6 +17,7 @@ def _make_ship(ship_id: str = "507f1f77bcf86cd799439011") -> Ship:
         quantum_speed=500.0,
         landing_time_seconds=60.0,
         loading_time_per_scu_seconds=5.0,
+        in_game=True,
     )
 
 
@@ -33,6 +34,7 @@ def _make_doc(ship_id: str = "507f1f77bcf86cd799439011") -> dict:
         "quantum_speed": 500.0,
         "landing_time_seconds": 60.0,
         "loading_time_per_scu_seconds": 5.0,
+        "in_game": True,
     }
 
 
