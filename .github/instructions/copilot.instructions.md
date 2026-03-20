@@ -61,7 +61,13 @@ src/
 |---|---|---|
 | `HHH_SHIPS_MONGO_URI` | `mongodb://localhost:27017` | MongoDB connection string |
 | `HHH_SHIPS_MONGO_DB` | `hhh_ships` | Database name |
+| `HHH_SHIPS_HOST` | `0.0.0.0` | Host address for the HTTP server |
 | `HHH_SHIPS_PORT` | `8002` | Service port |
+| `HEXADIAN_AUTH_JWT_SECRET` | `change-me-in-production` | Shared secret key for JWT signature verification |
+| `HHH_SHIPS_JWT_ALGORITHM` | `HS256` | JWT signing algorithm |
+| `HHH_SHIPS_CORS_ORIGINS` | `["http://localhost:3000","http://localhost:3001"]` | JSON array of allowed CORS origins |
+| `HHH_SHIPS_CACHE_TTL_SECONDS` | `600` | In-memory cache TTL in seconds |
+| `HHH_SHIPS_CACHE_MAX_SIZE` | `128` | Maximum number of entries in the in-memory cache |
 
 ## API
 
@@ -116,6 +122,8 @@ The issue title and PR title must be **identical**. PR body must include `Fixes 
 
 - **Keep the README up to date.** When you add, remove, or change commands, environment variables, API endpoints, domain models, or architecture — update `README.md`. The README is the source of truth for developers.
 - **Keep the monorepo CLI service registry up to date.** When adding or removing a service, update `SERVICES`, `FRONTENDS`, `COMPOSE_SERVICE_MAP`, and `SERVICE_ALIASES` in `hexadian-hauling-helper/hhh_cli/__init__.py`, plus the `docker-compose.yml` entry.
+
+<critical>**Externalize all configuration.** Any new configuration value that could vary between environments (URLs, ports, secrets, feature flags, timeouts, cache TTLs, origins, etc.) MUST be externalized as a Docker environment variable with a sensible default for local development. Add it to `Settings` in `src/infrastructure/config/settings.py`, update `README.md` with the new variable, and create a task in `hexadian-hauling-helper` to wire it in `docker-compose.yml`.</critical>
 
 ## Organization Profile Maintenance
 
