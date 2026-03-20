@@ -16,6 +16,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=120.0,
         loading_time_per_scu_seconds=3.0,
+        in_game=True,
     ),
     Ship(
         name="Freelancer",
@@ -28,6 +29,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=60.0,
         loading_time_per_scu_seconds=2.0,
+        in_game=True,
     ),
     Ship(
         name="Freelancer MAX",
@@ -40,6 +42,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=60.0,
         loading_time_per_scu_seconds=2.5,
+        in_game=True,
     ),
     Ship(
         name="Caterpillar",
@@ -55,6 +58,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=90.0,
         loading_time_per_scu_seconds=3.0,
+        in_game=True,
     ),
     Ship(
         name="C2 Hercules",
@@ -67,6 +71,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=90.0,
         loading_time_per_scu_seconds=3.5,
+        in_game=True,
     ),
     Ship(
         name="Hull C",
@@ -79,6 +84,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=120.0,
         loading_time_per_scu_seconds=4.0,
+        in_game=True,
     ),
     Ship(
         name="Cutlass Black",
@@ -91,6 +97,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=60.0,
         loading_time_per_scu_seconds=1.8,
+        in_game=True,
     ),
     Ship(
         name="Constellation Taurus",
@@ -103,6 +110,7 @@ SHIPS = [
         quantum_speed=283_046_000.0,
         landing_time_seconds=60.0,
         loading_time_per_scu_seconds=2.8,
+        in_game=True,
     ),
 ]
 

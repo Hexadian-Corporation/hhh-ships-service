@@ -16,6 +16,7 @@ class ShipDTO(BaseModel):
     quantum_speed: float = 0.0
     landing_time_seconds: float = 0.0
     loading_time_per_scu_seconds: float = 0.0
+    in_game: bool = True
 
     model_config = {"populate_by_name": True}
 
@@ -34,3 +35,4 @@ class ShipUpdateDTO(BaseModel):
     quantum_speed: float | None = None
     landing_time_seconds: float | None = None
     loading_time_per_scu_seconds: float | None = None
+    in_game: bool | None = None

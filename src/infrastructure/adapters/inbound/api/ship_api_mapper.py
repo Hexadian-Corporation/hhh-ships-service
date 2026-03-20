@@ -17,6 +17,7 @@ class ShipApiMapper:
             quantum_speed=dto.quantum_speed,
             landing_time_seconds=dto.landing_time_seconds,
             loading_time_per_scu_seconds=dto.loading_time_per_scu_seconds,
+            in_game=dto.in_game,
         )
 
     @staticmethod
@@ -31,6 +32,7 @@ class ShipApiMapper:
             quantum_speed=ship.quantum_speed,
             landing_time_seconds=ship.landing_time_seconds,
             loading_time_per_scu_seconds=ship.loading_time_per_scu_seconds,
+            in_game=ship.in_game,
         )
 
     @staticmethod
@@ -52,4 +54,6 @@ class ShipApiMapper:
             updates["landing_time_seconds"] = dto.landing_time_seconds
         if dto.loading_time_per_scu_seconds is not None:
             updates["loading_time_per_scu_seconds"] = dto.loading_time_per_scu_seconds
+        if dto.in_game is not None:
+            updates["in_game"] = dto.in_game
         return replace(existing, **updates) if updates else existing

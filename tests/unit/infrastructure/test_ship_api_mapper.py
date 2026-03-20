@@ -14,6 +14,7 @@ def _make_ship() -> Ship:
         quantum_speed=500.0,
         landing_time_seconds=60.0,
         loading_time_per_scu_seconds=5.0,
+        in_game=True,
     )
 
 
@@ -93,6 +94,14 @@ class TestUpdateToDomain:
         result = ShipApiMapper.update_to_domain(existing, dto)
 
         assert result.loading_time_per_scu_seconds == 3.0
+
+    def test_updates_in_game(self) -> None:
+        existing = _make_ship()
+        dto = ShipUpdateDTO(in_game=False)
+
+        result = ShipApiMapper.update_to_domain(existing, dto)
+
+        assert result.in_game is False
 
     def test_updates_multiple_fields(self) -> None:
         existing = _make_ship()
