@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.application.ports.outbound.ship_repository import ShipRepository
-from src.application.services.ship_service_impl import ShipServiceImpl
+from src.application.services.ship_service_impl import _CACHE_TTL, ShipServiceImpl
 from src.domain.models.ship import Ship
 
 
@@ -210,3 +210,8 @@ class TestUpdateShip:
 
         service.list_all()
         assert mock_repo.find_all.call_count == 2
+
+
+class TestCacheTTL:
+    def test_cache_ttl_is_600(self) -> None:
+        assert _CACHE_TTL == 600
