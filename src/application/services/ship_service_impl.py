@@ -22,51 +22,51 @@ class ShipServiceImpl(ShipService):
         self._repository = ship_repository
         self._cache: TTLCache[str, Ship | list[Ship]] = TTLCache(maxsize=cache_max_size, ttl=cache_ttl_seconds)
 
-    def create(self, ship: Ship) -> Ship:
-        result = self._repository.save(ship)
+    async def create(self, ship: Ship) -> Ship:
+        result = await self._repository.save(ship)
         self._cache.clear()
         return result
 
-    def get(self, ship_id: str) -> Ship:
+    async def get(self, ship_id: str) -> Ship:
         key = f"{_SHIP_KEY_PREFIX}{ship_id}"
         cached = self._cache.get(key)
         if cached is not None:
             return cached
-        ship_found = self._repository.find_by_id(ship_id)
+        ship_found = await self._repository.find_by_id(ship_id)
         if ship_found is None:
             raise ShipNotFoundError(ship_id)
         self._cache[key] = ship_found
         return ship_found
 
-    def list_all(self) -> list[Ship]:
+    async def list_all(self) -> list[Ship]:
         cached = self._cache.get(_LIST_CACHE_KEY)
         if cached is not None:
             return cached
-        ships = self._repository.find_all()
+        ships = await self._repository.find_all()
         self._cache[_LIST_CACHE_KEY] = ships
         return ships
 
-    def delete(self, ship_id: str) -> None:
-        if not self._repository.delete(ship_id):
+    async def delete(self, ship_id: str) -> None:
+        if not await self._repository.delete(ship_id):
             raise ShipNotFoundError(ship_id)
         self._cache.clear()
 
-    def search_by_name(self, query: str) -> list[Ship]:
+    async def search_by_name(self, query: str) -> list[Ship]:
         if not query.strip():
             return []
         key = f"{_SEARCH_KEY_PREFIX}{query.lower()}"
         cached = self._cache.get(key)
         if cached is not None:
             return cached  # type: ignore[return-value]
-        results = self._repository.search_by_name(query)
+        results = await self._repository.search_by_name(query)
         self._cache[key] = results
         return results
 
-    def update(self, ship: Ship) -> Ship:
-        existing = self._repository.find_by_id(ship.id)
+    async def update(self, ship: Ship) -> Ship:
+        existing = await self._repository.find_by_id(ship.id)
         if existing is None:
             raise ShipNotFoundError(ship.id)
-        result = self._repository.update(ship)
+        result = await self._repository.update(ship)
         if result is None:
             raise ShipNotFoundError(ship.id)
         self._cache.clear()

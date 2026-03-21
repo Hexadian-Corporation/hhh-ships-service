@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -6,11 +6,23 @@ from fastapi.testclient import TestClient
 _JWT_SECRET = "test-secret-key-at-least-32-bytes-long"
 
 
+def _make_motor_mock() -> MagicMock:
+    """Build a mock AsyncIOMotorClient chain with AsyncMock collection."""
+    mock_collection = AsyncMock()
+    mock_collection.find = MagicMock()
+    mock_collection.find.return_value.to_list = AsyncMock(return_value=[])
+    mock_db = MagicMock()
+    mock_db.__getitem__ = MagicMock(return_value=mock_collection)
+    mock_client = MagicMock()
+    mock_client.__getitem__ = MagicMock(return_value=mock_db)
+    return mock_client
+
+
 @pytest.fixture
 def client() -> TestClient:
     with (
         patch.dict("os.environ", {"HEXADIAN_AUTH_JWT_SECRET": _JWT_SECRET}),
-        patch("src.infrastructure.config.dependencies.MongoClient"),
+        patch("src.infrastructure.config.dependencies.AsyncIOMotorClient", return_value=_make_motor_mock()),
     ):
         from src.main import create_app
 
@@ -61,9 +73,10 @@ class TestCORSMiddleware:
 
 class TestLifespan:
     def test_lifespan_calls_seed_ships(self) -> None:
+        mock_client = _make_motor_mock()
         with (
             patch.dict("os.environ", {"HEXADIAN_AUTH_JWT_SECRET": _JWT_SECRET}),
-            patch("src.infrastructure.config.dependencies.MongoClient"),
+            patch("src.infrastructure.config.dependencies.AsyncIOMotorClient", return_value=mock_client),
             patch("src.main.seed_ships") as mock_seed,
         ):
             from src.main import create_app

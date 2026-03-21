@@ -1,13 +1,11 @@
-from unittest.mock import MagicMock, call, patch
-
-from pymongo.collation import Collation
+from unittest.mock import MagicMock, patch
 
 from src.infrastructure.config.dependencies import AppModule
 from src.infrastructure.config.settings import Settings
 
 
-class TestAppModuleIndexes:
-    def test_creates_name_index_with_collation(self) -> None:
+class TestAppModuleClient:
+    def test_uses_async_motor_client(self) -> None:
         settings = Settings(mongo_uri="mongodb://localhost:27017", mongo_db="test_db", jwt_secret="test-secret")
         module = AppModule(settings)
 
@@ -17,16 +15,12 @@ class TestAppModuleIndexes:
         mock_client = MagicMock()
         mock_client.__getitem__ = MagicMock(return_value=mock_db)
 
-        with patch("src.infrastructure.config.dependencies.MongoClient", return_value=mock_client):
+        with patch("src.infrastructure.config.dependencies.AsyncIOMotorClient", return_value=mock_client) as mock_motor:
             module.configure()
 
-        calls = mock_collection.create_index.call_args_list
-        assert len(calls) == 2
+        mock_motor.assert_called_once_with(settings.mongo_uri)
 
-        name_call = calls[0]
-        assert name_call == call("name", collation=Collation(locale="en", strength=2))
-
-    def test_creates_manufacturer_index(self) -> None:
+    def test_binds_collection_from_correct_db(self) -> None:
         settings = Settings(mongo_uri="mongodb://localhost:27017", mongo_db="test_db", jwt_secret="test-secret")
         module = AppModule(settings)
 
@@ -36,9 +30,8 @@ class TestAppModuleIndexes:
         mock_client = MagicMock()
         mock_client.__getitem__ = MagicMock(return_value=mock_db)
 
-        with patch("src.infrastructure.config.dependencies.MongoClient", return_value=mock_client):
+        with patch("src.infrastructure.config.dependencies.AsyncIOMotorClient", return_value=mock_client):
             module.configure()
 
-        calls = mock_collection.create_index.call_args_list
-        manufacturer_call = calls[1]
-        assert manufacturer_call == call("manufacturer")
+        mock_client.__getitem__.assert_called_with(settings.mongo_db)
+        mock_db.__getitem__.assert_called_with("ships")

@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -24,8 +24,8 @@ def _make_ship(ship_id: str = "id1") -> Ship:
 
 
 @pytest.fixture
-def mock_service() -> MagicMock:
-    return MagicMock()
+def mock_service() -> AsyncMock:
+    return AsyncMock()
 
 
 class TestSeedData:
@@ -71,28 +71,28 @@ class TestSeedData:
 
 
 class TestSeedShips:
-    def test_creates_ships_when_none_exist(self, mock_service: MagicMock) -> None:
+    async def test_creates_ships_when_none_exist(self, mock_service: AsyncMock) -> None:
         mock_service.list_all.return_value = []
         mock_service.create.return_value = _make_ship()
 
-        result = seed_ships(mock_service)
+        result = await seed_ships(mock_service)
 
         assert len(result) == len(SHIPS)
         assert mock_service.create.call_count == len(SHIPS)
 
-    def test_skips_when_ships_already_exist(self, mock_service: MagicMock) -> None:
+    async def test_skips_when_ships_already_exist(self, mock_service: AsyncMock) -> None:
         mock_service.list_all.return_value = [_make_ship()]
 
-        result = seed_ships(mock_service)
+        result = await seed_ships(mock_service)
 
         assert result == []
         mock_service.create.assert_not_called()
 
-    def test_uses_replace_copy_not_original(self, mock_service: MagicMock) -> None:
+    async def test_uses_replace_copy_not_original(self, mock_service: AsyncMock) -> None:
         mock_service.list_all.return_value = []
         mock_service.create.return_value = _make_ship()
 
-        seed_ships(mock_service)
+        await seed_ships(mock_service)
 
         call_arg = mock_service.create.call_args[0][0]
         assert call_arg is not SHIPS[0]
