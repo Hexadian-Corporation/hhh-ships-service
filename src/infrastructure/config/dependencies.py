@@ -1,7 +1,5 @@
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 from opyoid import Module, SingletonScope
-from pymongo import MongoClient
-from pymongo.collation import Collation
-from pymongo.collection import Collection
 
 from src.application.ports.inbound.ship_service import ShipService
 from src.application.ports.outbound.ship_repository import ShipRepository
@@ -16,14 +14,11 @@ class AppModule(Module):
         self._settings = settings
 
     def configure(self) -> None:
-        client = MongoClient(self._settings.mongo_uri)
+        client = AsyncIOMotorClient(self._settings.mongo_uri)
         db = client[self._settings.mongo_db]
         collection = db["ships"]
 
-        collection.create_index("name", collation=Collation(locale="en", strength=2))
-        collection.create_index("manufacturer")
-
-        self.bind(Collection, to_instance=collection, scope=SingletonScope)
+        self.bind(AsyncIOMotorCollection, to_instance=collection, scope=SingletonScope)
 
         mongo_repo = MongoShipRepository(collection)
         self.bind(ShipRepository, to_instance=mongo_repo, scope=SingletonScope)

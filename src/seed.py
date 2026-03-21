@@ -1,3 +1,4 @@
+import asyncio
 from dataclasses import replace
 
 from src.application.ports.inbound.ship_service import ShipService
@@ -115,14 +116,11 @@ SHIPS = [
 ]
 
 
-def seed_ships(service: ShipService) -> list[Ship]:
+async def seed_ships(service: ShipService) -> list[Ship]:
     """Seed ships if none exist. Idempotent."""
-    existing = service.list_all()
+    existing = await service.list_all()
     if existing:
         return []
 
-    created = []
-    for ship_data in SHIPS:
-        ship = replace(ship_data, cargo_holds=[replace(h) for h in ship_data.cargo_holds])
-        created.append(service.create(ship))
-    return created
+    copies = [replace(ship_data, cargo_holds=[replace(h) for h in ship_data.cargo_holds]) for ship_data in SHIPS]
+    return list(await asyncio.gather(*[service.create(ship) for ship in copies]))

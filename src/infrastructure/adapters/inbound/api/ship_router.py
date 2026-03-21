@@ -24,15 +24,15 @@ def init_router(ship_service: ShipService) -> None:
 
 
 @router.post("/", response_model=ShipDTO, status_code=201, dependencies=_write)
-def create_ship(dto: ShipDTO) -> ShipDTO:
+async def create_ship(dto: ShipDTO) -> ShipDTO:
     ship = ShipApiMapper.to_domain(dto)
-    created = _ship_service.create(ship)
+    created = await _ship_service.create(ship)
     return ShipApiMapper.to_dto(created)
 
 
 @router.get("/search", response_model=list[ShipDTO], dependencies=_read)
-def search_ships(q: str = "") -> JSONResponse:
-    dtos = [ShipApiMapper.to_dto(s) for s in _ship_service.search_by_name(q)]
+async def search_ships(q: str = "") -> JSONResponse:
+    dtos = [ShipApiMapper.to_dto(s) for s in await _ship_service.search_by_name(q)]
     return JSONResponse(
         content=[d.model_dump(by_alias=True) for d in dtos],
         headers={"Cache-Control": f"max-age={_CACHE_MAX_AGE}"},
@@ -40,9 +40,9 @@ def search_ships(q: str = "") -> JSONResponse:
 
 
 @router.get("/{ship_id}", response_model=ShipDTO, dependencies=_read)
-def get_ship(ship_id: str) -> JSONResponse:
+async def get_ship(ship_id: str) -> JSONResponse:
     try:
-        ship = _ship_service.get(ship_id)
+        ship = await _ship_service.get(ship_id)
     except ShipNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     dto = ShipApiMapper.to_dto(ship)
@@ -53,8 +53,8 @@ def get_ship(ship_id: str) -> JSONResponse:
 
 
 @router.get("/", response_model=list[ShipDTO], dependencies=_read)
-def list_ships() -> JSONResponse:
-    dtos = [ShipApiMapper.to_dto(s) for s in _ship_service.list_all()]
+async def list_ships() -> JSONResponse:
+    dtos = [ShipApiMapper.to_dto(s) for s in await _ship_service.list_all()]
     return JSONResponse(
         content=[d.model_dump(by_alias=True) for d in dtos],
         headers={"Cache-Control": f"max-age={_CACHE_MAX_AGE}"},
@@ -62,19 +62,19 @@ def list_ships() -> JSONResponse:
 
 
 @router.delete("/{ship_id}", status_code=204, dependencies=_delete)
-def delete_ship(ship_id: str) -> None:
+async def delete_ship(ship_id: str) -> None:
     try:
-        _ship_service.delete(ship_id)
+        await _ship_service.delete(ship_id)
     except ShipNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @router.put("/{ship_id}", response_model=ShipDTO, dependencies=_write)
-def update_ship(ship_id: str, dto: ShipUpdateDTO) -> ShipDTO:
+async def update_ship(ship_id: str, dto: ShipUpdateDTO) -> ShipDTO:
     try:
-        existing = _ship_service.get(ship_id)
+        existing = await _ship_service.get(ship_id)
         updated_ship = ShipApiMapper.update_to_domain(existing, dto)
-        result = _ship_service.update(updated_ship)
+        result = await _ship_service.update(updated_ship)
     except ShipNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     return ShipApiMapper.to_dto(result)

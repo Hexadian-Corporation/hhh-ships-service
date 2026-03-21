@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
@@ -40,7 +40,13 @@ def _make_doc(ship_id: str = "507f1f77bcf86cd799439011") -> dict:
 
 @pytest.fixture
 def mock_collection() -> MagicMock:
-    return MagicMock()
+    mock = MagicMock()
+    mock.find_one = AsyncMock()
+    mock.insert_one = AsyncMock()
+    mock.replace_one = AsyncMock()
+    mock.delete_one = AsyncMock()
+    mock.find.return_value.to_list = AsyncMock(return_value=[])
+    return mock
 
 
 @pytest.fixture
@@ -49,53 +55,57 @@ def repo(mock_collection: MagicMock) -> MongoShipRepository:
 
 
 class TestSearchByName:
-    def test_search_returns_matching_ships(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
+    async def test_search_returns_matching_ships(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
         doc = _make_doc()
-        mock_collection.find.return_value = [doc]
+        mock_collection.find.return_value.to_list = AsyncMock(return_value=[doc])
 
-        results = repo.search_by_name("aurora")
+        results = await repo.search_by_name("aurora")
 
         mock_collection.find.assert_called_once_with({"name": {"$regex": "aurora", "$options": "i"}})
         assert len(results) == 1
         assert results[0].name == "Aurora"
 
-    def test_search_returns_empty_when_no_match(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
-        mock_collection.find.return_value = []
+    async def test_search_returns_empty_when_no_match(
+        self, repo: MongoShipRepository, mock_collection: MagicMock
+    ) -> None:
+        mock_collection.find.return_value.to_list = AsyncMock(return_value=[])
 
-        results = repo.search_by_name("nonexistent")
+        results = await repo.search_by_name("nonexistent")
 
         assert results == []
 
-    def test_search_passes_query_to_regex(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
-        mock_collection.find.return_value = []
+    async def test_search_passes_query_to_regex(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
+        mock_collection.find.return_value.to_list = AsyncMock(return_value=[])
 
-        repo.search_by_name("Zeus")
+        await repo.search_by_name("Zeus")
 
         mock_collection.find.assert_called_once_with({"name": {"$regex": "Zeus", "$options": "i"}})
 
 
 class TestUpdate:
-    def test_update_returns_ship_on_success(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
+    async def test_update_returns_ship_on_success(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
         ship = _make_ship()
         mock_result = MagicMock()
         mock_result.matched_count = 1
         mock_collection.replace_one.return_value = mock_result
 
-        result = repo.update(ship)
+        result = await repo.update(ship)
 
         assert result == ship
 
-    def test_update_returns_none_when_not_found(self, repo: MongoShipRepository, mock_collection: MagicMock) -> None:
+    async def test_update_returns_none_when_not_found(
+        self, repo: MongoShipRepository, mock_collection: MagicMock
+    ) -> None:
         ship = _make_ship()
         mock_result = MagicMock()
         mock_result.matched_count = 0
         mock_collection.replace_one.return_value = mock_result
 
-        result = repo.update(ship)
+        result = await repo.update(ship)
 
         assert result is None
 
-    def test_update_calls_replace_one_with_correct_filter(
+    async def test_update_calls_replace_one_with_correct_filter(
         self, repo: MongoShipRepository, mock_collection: MagicMock
     ) -> None:
         from bson import ObjectId
@@ -105,7 +115,7 @@ class TestUpdate:
         mock_result.matched_count = 1
         mock_collection.replace_one.return_value = mock_result
 
-        repo.update(ship)
+        await repo.update(ship)
 
         call_args = mock_collection.replace_one.call_args
         assert call_args[0][0] == {"_id": ObjectId(ship.id)}

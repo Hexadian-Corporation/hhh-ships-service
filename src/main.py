@@ -5,7 +5,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from hexadian_auth_common.fastapi import JWTAuthDependency, _stub_jwt_auth, register_exception_handlers
+from motor.motor_asyncio import AsyncIOMotorCollection
 from opyoid import Injector
+from pymongo.collation import Collation
 
 from src.application.ports.inbound.ship_service import ShipService
 from src.infrastructure.adapters.inbound.api.ship_router import init_router, router
@@ -21,9 +23,13 @@ def create_app() -> FastAPI:
     ship_service = injector.inject(ShipService)
     init_router(ship_service)
 
+    collection = injector.inject(AsyncIOMotorCollection)
+
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
-        seed_ships(ship_service)
+        await collection.create_index("name", collation=Collation(locale="en", strength=2))
+        await collection.create_index("manufacturer")
+        await seed_ships(ship_service)
         yield
 
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
